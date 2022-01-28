@@ -1,16 +1,26 @@
 import { observer } from 'mobx-react-lite';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { Button, Form, Segment } from 'semantic-ui-react';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { Activity } from '../../../app/models/activity';
 import { useStore } from '../../../app/stores/store';
-
+import { v4 as uuid } from 'uuid';
 
 export default observer(function ActivityForm() {
+  const history = useHistory();
+  const { activityStore } = useStore();
+  const {
+    createActivity,
+    updateActivity,
+    loading,
+    loadActivitiy,
+    loadingInitial,
+  } = activityStore;
 
-const { activityStore } = useStore();
-const { selectedActivity, closeForm,createActivity,updateActivity,loading} = activityStore;
+  const { id } = useParams<{ id: string }>();
 
-  const initialState = selectedActivity ?? {
+  const [activity, setActivity] = useState({
     id: '',
     title: '',
     cateroty: '',
@@ -18,12 +28,30 @@ const { selectedActivity, closeForm,createActivity,updateActivity,loading} = act
     date: '',
     city: '',
     venue: '',
-  };
+  });
 
-  const [activity, setActivity] = useState(initialState);
+  useEffect(() => {
+    if (id) loadActivitiy(id).then((activity) => setActivity(activity!));
+  }, [id, loadActivitiy]);
 
   function handleSubmit() {
-    activity.id ? updateActivity(activity) : createActivity(activity);
+    console.log(activity.id.length);
+    if (activity.id.length === 0) {
+      let newActivity = {
+        ...activity,
+        id: uuid(),
+      };
+      createActivity(newActivity).then(() =>
+        history.push(`/activities/${newActivity.id}`)
+      );
+    } else {
+      console.log('updateActivity');
+      updateActivity(activity).then(() =>
+        history.push(`/activities/${activity.id}`)
+      );
+    }
+
+    //activity.id ? updateActivity(activity) : createActivity(activity);
   }
 
   function handleInputChange(
@@ -33,6 +61,7 @@ const { selectedActivity, closeForm,createActivity,updateActivity,loading} = act
     setActivity({ ...activity, [name]: value });
   }
 
+  if (loadingInitial) return <LoadingComponent content='Loading activity...' />;
   return (
     <Segment clearing>
       <Form onSubmit={handleSubmit} autoComplete='off'>
@@ -82,7 +111,9 @@ const { selectedActivity, closeForm,createActivity,updateActivity,loading} = act
           content='Submit'
         />
         <Button
-          onClick={closeForm}
+          as={Link}
+          to='/activities'
+          //onClick={closeForm}
           floated='right'
           type='button'
           content='Cancel'
@@ -90,4 +121,4 @@ const { selectedActivity, closeForm,createActivity,updateActivity,loading} = act
       </Form>
     </Segment>
   );
-})
+});
