@@ -4,6 +4,7 @@ import { Activity } from '../models/activity';
 
 import { history } from '../../index';
 import { store } from '../stores/store';
+import { User, UserFormValues } from '../models/User';
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -12,6 +13,13 @@ const sleep = (delay: number) => {
 };
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
+
+
+axios.interceptors.request.use(config => {
+  const token = store.commonStore.token;
+  if(token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 // bilo sto sto inje status 200 je rejection
 axios.interceptors.response.use(
@@ -24,10 +32,10 @@ axios.interceptors.response.use(
 
     switch (status) {
       case 400:
-        if(typeof data === 'string'){
+        if (typeof data === 'string') {
           toast.error(data);
         }
-        if(config.method === 'get' && data.errors.hasOwnProperty('id')){
+        if (config.method === 'get' && data.errors.hasOwnProperty('id')) {
           history.push('/not-found');
         }
         if (data.errors) {
@@ -38,10 +46,10 @@ axios.interceptors.response.use(
             }
           }
           throw modalStateErrors.flat();
-        } 
+        }
         break;
       case 401:
-        toast.error('unauthorized ');
+        toast.error('unauthorized blabla');
         break;
       case 404:
         //toast.error('not found ');
@@ -75,8 +83,16 @@ const Activities = {
   delete: (id: string) => requests.del<void>(`/activites/${id}`),
 };
 
+const Account = {
+  current: () => requests.get<User>('/account'),
+  login: (user: UserFormValues) => requests.post<User>('/account/login', user),
+  register: (user: UserFormValues) =>
+    requests.post<User>('/account/register', user),
+};
+
 const agent = {
   Activities,
+  Account,
 };
 
 export default agent;
