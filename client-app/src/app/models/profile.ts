@@ -1,16 +1,23 @@
-import { User } from "./User";
+import { User } from './User';
 
-export interface Profile{
-    username :string;
-    displayName: string;
-    image?: string;
-    bio?:string;
+export interface Profile {
+  username: string;
+  displayName: string;
+  image?: string;
+  bio?: string;
+  photos?: Photo[];
 }
 
-export class Profile implements Profile{
-    constructor(user: User){
-        this.username = user.username;
-        this.displayName = user.username;
-        this.image = user.image;
-    }
+export class Profile implements Profile {
+  constructor(user: User) {
+    this.username = user.username;
+    this.displayName = user.username;
+    this.image = user.image;
+  }
+}
+
+export interface Photo {
+  id: string;
+  url: string;
+  isMain: boolean;
 }
