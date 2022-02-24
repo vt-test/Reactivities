@@ -4,6 +4,10 @@ import React from 'react';
 import { Segment, Grid, Icon } from 'semantic-ui-react';
 import { Activity } from '../../../app/models/activity';
 
+interface Props {
+  activity: Activity;
+}
+
 function ActivityDetailInfo({ activity }: Props) {
   return (
     <Segment.Group>
@@ -43,8 +47,6 @@ function ActivityDetailInfo({ activity }: Props) {
   );
 }
 
-interface Props {
-  activity: Activity;
-}
+
 
 export default observer(ActivityDetailInfo);

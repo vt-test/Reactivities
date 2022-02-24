@@ -36,7 +36,7 @@ function ActivityDeatailChat({ activityId }: Props) {
         <Header>Chat about this event</Header>
       </Segment>
       <Segment attached clearing>
-        {/* {'inside formik we will use render props'} */}
+        
         <Formik
           onSubmit={(values, { resetForm }) =>
             commentStore.addComment(values).then(() => resetForm())

@@ -8,10 +8,10 @@ interface Props {
   activity: Activity;
 }
 
-export default observer(function AcivityDetailSidebar({ activity : {attendees, host} }: Props) {
-
-
-  if(!attendees) return null;
+export default observer(function AcivityDetailSidebar({
+  activity: { attendees, host },
+}: Props) {
+  if (!attendees) return null;
 
   return (
     <>
@@ -46,7 +46,10 @@ export default observer(function AcivityDetailSidebar({ activity : {attendees, h
                     {attendee.displayName}
                   </Link>
                 </Item.Header>
-                <Item.Extra style={{ color: 'orange' }}>Following</Item.Extra>
+
+                {attendee.following && (
+                  <Item.Extra style={{ color: 'orange' }}>Following</Item.Extra>
+                )}
               </Item.Content>
             </Item>
           ))}

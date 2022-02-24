@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Core;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain;
@@ -22,8 +23,10 @@ namespace Application.Activities
             private readonly DataContext _context;
             private readonly ILogger<List> _logger;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, ILogger<List> logger, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+            public Handler(DataContext context, ILogger<List> logger, IMapper mapper, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _mapper = mapper;
                 _logger = logger;
                 _context = context;
@@ -47,7 +50,7 @@ namespace Application.Activities
 
                 
                 var activites = await _context.Activites
-                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider)
+                    .ProjectTo<ActivityDto>(_mapper.ConfigurationProvider, new {currentUsername = _userAccessor.GetUserName()})
                 // .Include(a => a.Attendess)
                 // .ThenInclude(u => u.AppUser)
                 .ToListAsync(cancellationToken);
