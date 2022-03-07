@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 
 using Application.Activities;
 using Microsoft.AspNetCore.Authorization;
+using Application.Core;
 
 namespace API.Controllers
 {
     public class ActivitesController : BaseApiController
     {
         [HttpGet]
-        public async Task<IActionResult> GetActivities(CancellationToken ct)
+        public async Task<IActionResult> GetActivities([FromQuery]ActivityParams pagingParams)
         {
             //return await _context.Activites.ToListAsync();
-            return HandleResult(await Mediator.Send(new List.Query(), ct));
+            return HandlePagedResult(await Mediator.Send(new List.Query{ Params = pagingParams }));
         }
 
         [HttpGet("{id}")] //activites/id
